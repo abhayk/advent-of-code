@@ -6,57 +6,73 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class IntCodeComputer
 {
-    public static List<Integer> runDiagnostic( int[] instructions )
+    private long[] instructions;
+    private long[] memory;
+    private LinkedBlockingQueue<Long> input;
+    private LinkedBlockingQueue<Long> output;
+    private int relativeBase;
+
+    public IntCodeComputer( long[] instructions )
     {
-        return runDiagnostic( 0, instructions );
+        this( instructions, new LinkedBlockingQueue<>(), new LinkedBlockingQueue<>() );
     }
 
-    public static List<Integer> runDiagnostic( int input, int[] instructions )
+    public IntCodeComputer( long[] instructions, LinkedBlockingQueue<Long> input, LinkedBlockingQueue<Long> output )
+    {
+        this.instructions = instructions;
+        this.memory = Arrays.copyOf( instructions, instructions.length );
+        this.input = input;
+        this.output = output;
+    }
+
+    public List<Long> getOutput()
+    {
+        return Arrays.asList( this.output.toArray( new Long[]{} ) );
+    }
+
+    public long[] getMemoryState()
+    {
+        return this.memory;
+    }
+
+    public void provideInput( long value )
     {
         try
         {
-            LinkedBlockingQueue<Integer> inputQueue = new LinkedBlockingQueue<>();
-            inputQueue.put( input );
-            LinkedBlockingQueue<Integer> outputQueue = new LinkedBlockingQueue<>();
-            runDiagnostic(inputQueue, outputQueue, instructions );
-            return Arrays.asList( outputQueue.toArray( new Integer[]{} ) );
+            this.input.put( value );
         }
-        catch (InterruptedException e ) { e.printStackTrace(); }
-        return null;
+        catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    public static void runDiagnostic( LinkedBlockingQueue<Integer> input,
-                                      LinkedBlockingQueue<Integer> output,
-                                      int[] instructions )
+    public void runProgram()
     {
-        int i=0;
-        while( i < instructions.length)
+        long i=0;
+        while( i < memory.length)
         {
-            int[] ins = Util.getAsIntArray( instructions[i] );
+            int[] ins = Util.getAsIntArray( getValueAt( i ) );
             int j=ins.length - 1;
             int opcode = j == 0 ? ins[j--] : ins[j--] + ins[j--] * 10;
             int mode1 = getParameterMode( ins, j-- );
             int mode2 = getParameterMode( ins, j-- );
+            int mode3 = getParameterMode( ins, j-- );
 
             if( opcode == 99 )
                 break;
             else if( opcode == 1 )
             {
-                instructions[instructions[i + 3]] = getParameter(i, 1, mode1, instructions) +
-                        getParameter(i, 2, mode2, instructions);
+                setValueAt( getValueAt( i+3 ), getParameter(i+1, mode1 ) + getParameter(i+2, mode2 ), mode3 );
                 i += 4;
             }
             else if( opcode == 2 )
             {
-                instructions[instructions[i + 3]] = getParameter(i, 1, mode1, instructions) *
-                        getParameter(i, 2, mode2, instructions);
+                setValueAt( getValueAt( i+3 ), getParameter(i+1, mode1 ) * getParameter(i+2, mode2 ), mode3 );
                 i += 4;
             }
             else if( opcode == 3 )
             {
                 try
                 {
-                    instructions[instructions[i+1]] = input.take();
+                    setValueAt( getValueAt(i+1), input.take(), mode1 );
                 }
                 catch (InterruptedException e) { e.printStackTrace(); }
                 i += 2;
@@ -65,8 +81,7 @@ public class IntCodeComputer
             {
                 try
                 {
-                    int parameter = getParameter(i, 1, mode1, instructions );
-                    //System.out.println(parameter);
+                    long parameter = getParameter(i+1, mode1 );
                     output.put( parameter );
                 }
                 catch (InterruptedException e) { e.printStackTrace(); }
@@ -74,40 +89,76 @@ public class IntCodeComputer
             }
             else if( opcode == 5 )
             {
-                if( getParameter(i, 1, mode1, instructions ) != 0)
-                    i = getParameter(i, 2, mode2, instructions );
+                if( getParameter(i+1, mode1 ) != 0)
+                    i = getParameter(i+2, mode2 );
                 else
                     i += 3;
             }
             else if( opcode == 6 )
             {
-                if( getParameter(i, 1, mode1, instructions ) == 0)
-                    i = getParameter(i, 2, mode2, instructions );
+                if( getParameter(i+1, mode1 ) == 0)
+                    i = getParameter(i+2, mode2 );
                 else
                     i += 3;
             }
             else if( opcode == 7 )
             {
-                instructions[instructions[i+3]] =
-                        getParameter(i, 1, mode1, instructions ) < getParameter(i, 2, mode2, instructions ) ? 1 : 0;
+                setValueAt( getValueAt( i+3 ), getParameter(i+1, mode1 ) < getParameter(i+2, mode2 ) ? 1 : 0, mode3 );
                 i += 4;
             }
             else if( opcode == 8 )
             {
-                instructions[instructions[i+3]] =
-                        getParameter(i, 1, mode1, instructions ) == getParameter(i, 2, mode2, instructions ) ? 1 : 0;
+                setValueAt( getValueAt( i+3), getParameter(i+1, mode1 ) == getParameter(i+2, mode2 ) ? 1 : 0, mode3 );
                 i += 4;
+            }
+            else if( opcode == 9 )
+            {
+                relativeBase += getParameter(i+1, mode1 );
+                i += 2;
             }
         }
     }
 
-    private static int getParameter( int i, int offset, int mode, int[] instructions )
+    private void setValueAt( long index, long value, int mode )
     {
-        return mode == 1 ? instructions[i+offset] : instructions[instructions[i+offset]];
+        if( mode == 2 )
+            index += relativeBase;
+        if( index >= this.memory.length )
+            resizeMemory( index + 1 );
+        this.memory[(int)index] = value;
     }
 
-    private static int getParameterMode( int[] ins, int j )
+    private long getValueAt( long index )
+    {
+        if( index >= this.memory.length )
+            resizeMemory( index + 1 );
+        return this.memory[(int)index];
+    }
+
+    private void resizeMemory( long newSize )
+    {
+        this.memory = Arrays.copyOf( this.memory, (int)newSize );
+    }
+
+    private long getParameter( long index, int mode )
+    {
+        if( mode == 0 )
+            return getValueAt( getValueAt( index));
+        else if( mode == 1 )
+            return getValueAt( index );
+        else if( mode == 2 )
+            return getValueAt( getValueAt(index) + relativeBase );
+
+        throw new IllegalArgumentException("Invalid mode passed - " + mode );
+    }
+
+    private int getParameterMode( int[] ins, int j )
     {
         return j < 0 ? 0 : ins[j];
+    }
+
+    public static long[] parseInput( String input )
+    {
+        return Arrays.stream( input.split(",") ).mapToLong( val -> Long.parseLong( val.trim() ) ).toArray();
     }
 }

@@ -15,14 +15,14 @@ public class Util
                 split[split.length-1].toLowerCase() + ".txt");
     }
 
-    public static int[] getAsIntArray(int n)
+    public static int[] getAsIntArray(long n)
     {
         int size = String.valueOf( n ).length();
         int[] arr = new int[size];
         int i=size - 1;
         while( n > 0)
         {
-            arr[i--] = n % 10;
+            arr[i--] = (int) (n % 10);
             n /= 10;
         }
         return arr;

@@ -5,28 +5,27 @@ import common.Util;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 public class Day5
 {
-    private static int[] parseInput( String input )
-    {
-        return Arrays.stream( input.split(",") ).mapToInt(val -> Integer.parseInt( val.trim() ) ).toArray();
-    }
-
     public static void main(String[] args) throws IOException
     {
         String input = new String(Files.readAllBytes(Util.getInputFilePath()));
-        int[] instructions = parseInput( input );
+        long[] instructions = IntCodeComputer.parseInput( input );
 
-        List<Integer> outputs = IntCodeComputer.runDiagnostic( 1, Arrays.copyOf(instructions, instructions.length ) );
-        int output = outputs.get( outputs.size() - 1);
+        IntCodeComputer computer = new IntCodeComputer( instructions );
+        computer.provideInput(1);
+        computer.runProgram();
+        List<Long> outputs = computer.getOutput();
+        long output = outputs.get( outputs.size() - 1);
         System.out.println( output );
         assert output == 3122865;
 
-        outputs = IntCodeComputer.runDiagnostic( 5, Arrays.copyOf(instructions, instructions.length ) );
+        computer = new IntCodeComputer( instructions );
+        computer.provideInput( 5 );
+        computer.runProgram();
+        outputs = computer.getOutput();
         output = outputs.get( outputs.size() - 1);
         System.out.println( output );
         assert output == 773660;
