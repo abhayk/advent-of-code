@@ -27,4 +27,17 @@ public class Util
         }
         return arr;
     }
+
+    //from the function printHexBinary in jaxb-api
+    public static String bytesToHex( byte[] bytes )
+    {
+        StringBuilder sb = new StringBuilder( bytes.length * 2 );
+        char[] hexCode = "0123456789ABCDEF".toCharArray();
+        for( byte b : bytes )
+        {
+            sb.append(hexCode[(b >> 4) & 0xF]);
+            sb.append(hexCode[(b & 0xF)]);
+        }
+        return sb.toString();
+    }
 }

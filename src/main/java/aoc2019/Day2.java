@@ -6,8 +6,6 @@ import common.Util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class Day2
 {
@@ -50,7 +48,6 @@ public class Day2
     {
         long[] input;
         long[] output;
-        IntCodeComputer computer;
 
         input = new long[]{ 1,9,10,3,2,3,11,0,99,30,40,50 };
         assert Arrays.equals( runProgram( input ) , new long[]{ 3500,9,10,70,2,3,11,0,99,30,40,50} );
