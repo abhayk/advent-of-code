@@ -14,6 +14,12 @@ public class IntCodeComputer
     private LinkedBlockingQueue<Long> input;
     private LinkedBlockingQueue<Long> output;
     private int relativeBase;
+    private STATUS status = STATUS.NOT_STARTED;
+
+    enum STATUS
+    {
+        NOT_STARTED, DONE, RUNNING, WAITING_INPUT;
+    }
 
     public IntCodeComputer( long[] instructions )
     {
@@ -52,9 +58,29 @@ public class IntCodeComputer
         catch (InterruptedException e) { e.printStackTrace(); }
     }
 
+    public long takeOutput()
+    {
+        try
+        {
+            return this.output.take();
+        }
+        catch (InterruptedException e) { throw new RuntimeException(e); }
+    }
+
+    public boolean isDoneProcessing()
+    {
+        return this.status == STATUS.DONE;
+    }
+
+    public boolean isRunning()
+    {
+        return this.status == STATUS.RUNNING;
+    }
+
     public void runProgram()
     {
         long i=0;
+        this.status = STATUS.RUNNING;
         while( i < memory.size())
         {
             int[] ins = Util.getAsIntArray( read(i, 1) );
@@ -65,7 +91,10 @@ public class IntCodeComputer
             int mode3 = getParameterMode( ins, j-- );
 
             if( opcode == 99 )
+            {
+                this.status = STATUS.DONE;
                 break;
+            }
             else if( opcode == 1 )
             {
                 write( read( i+3, 1 ), read(i+1, mode1 ) + read(i+2, mode2 ), mode3 );
@@ -78,12 +107,14 @@ public class IntCodeComputer
             }
             else if( opcode == 3 )
             {
+                this.status = STATUS.WAITING_INPUT;
                 try
                 {
                     write( read(i+1, 1), input.take(), mode1 );
                 }
                 catch (InterruptedException e) { e.printStackTrace(); }
                 i += 2;
+                this.status = STATUS.RUNNING;
             }
             else if( opcode == 4 )
             {
