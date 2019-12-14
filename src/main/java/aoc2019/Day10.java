@@ -1,5 +1,6 @@
 package aoc2019;
 
+import common.Point;
 import common.Util;
 
 import java.io.IOException;
@@ -14,36 +15,7 @@ import java.util.Objects;
 
 public class Day10
 {
-    static class Point
-    {
-        double x;
-        double y;
-        Point( double x, double y )
-        {
-            this.x = x;
-            this.y = y;
-        }
-        @Override
-        public String toString() { return "(" + (int)this.x + "," + (int)this.y + ")"; }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Point point = (Point) o;
-            return Double.compare(point.x, x) == 0 &&
-                    Double.compare(point.y, y) == 0;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(x, y);
-        }
-    }
-
-    private static List<Point> parseAsteroidLocations( List<String> input )
+    private static List<Point> parseAsteroidLocations(List<String> input )
     {
         List<Point> points = new ArrayList<>();
         int i=0;

@@ -1,6 +1,9 @@
 package common;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Util
 {
@@ -38,5 +41,14 @@ public class Util
             sb.append(hexCode[(b & 0xF)]);
         }
         return sb.toString();
+    }
+
+    public static List<Integer> getAllNumbers( String input )
+    {
+        List<Integer> numbers = new ArrayList<>();
+        Scanner scanner = new Scanner( input ).useDelimiter("[^-?\\d]+");
+        while( scanner.hasNext() )
+            numbers.add( scanner.nextInt() );
+        return numbers;
     }
 }
