@@ -43,12 +43,42 @@ public class Util
         return sb.toString();
     }
 
-    public static List<Integer> getAllNumbers( String input )
+    public static int[] getAllNumbers( String input )
     {
         List<Integer> numbers = new ArrayList<>();
         Scanner scanner = new Scanner( input ).useDelimiter("[^-?\\d]+");
         while( scanner.hasNext() )
             numbers.add( scanner.nextInt() );
-        return numbers;
+        return numbers.stream().mapToInt( a -> a ).toArray();
+    }
+
+    public static long lcm( int[] input )
+    {
+        long lcm = 1L;
+        int divisor = 2;
+        while( true )
+        {
+            int counter = 0;
+            boolean divisible = false;
+            for( int i=0; i<input.length; i++ )
+            {
+                //Another additional optimization we can do is to check if the element is prime.
+                //If so just divide it with it immediately and we don't need to wait for the divisor to catch up.
+
+                if( input[i] == 1)
+                    counter++;
+                if( input[i] % divisor == 0 )
+                {
+                    divisible = true;
+                    input[i] = input[i] /= divisor;
+                }
+            }
+            if( divisible )
+                lcm *= divisor;
+            else
+                divisor++;
+            if( counter == input.length )
+                return lcm;
+        }
     }
 }

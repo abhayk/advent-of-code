@@ -20,6 +20,11 @@ public class Point
         this.z = z;
     }
 
+    public Point( Point point )
+    {
+        this( point.x, point.y, point.z );
+    }
+
     @Override
     public boolean equals(Object o)
     {
