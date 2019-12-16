@@ -32,9 +32,9 @@ public class Day11
         int currentDirection = 0;
         Map<Integer, int[]> moveMap = Map.of(
                 0, new int[]{0, 1},
-                1, new int[]{1, 0},
+                1, new int[]{-1, 0},
                 2, new int[]{0, -1},
-                3, new int[]{-1, 0});
+                3, new int[]{1, 0});
         pointColourMap.put( new Point(0,0), startingColour );
         while( !computer.isDoneProcessing() )
         {
@@ -89,13 +89,10 @@ public class Day11
             Point p = entry.getKey();
             grid[p.y+yShift][p.x+xShift] = entry.getValue();
         }
-        // output is mirrored.
         for( int i=maxY-1; i>=0; i-- )
         {
             for( int j=maxX-1; j>=0; j-- )
-            {
                 System.out.print(grid[i][j] == 1 ? '#' : ' ');
-            }
             System.out.println();
         }
     }
