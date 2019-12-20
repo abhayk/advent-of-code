@@ -12,9 +12,11 @@ public class Util
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         String className = stackTraceElements[ stackTraceElements.length - 1].getClassName();
         String[] split = className.split("\\.");
-        return Path.of("src", "main", "resources",
+        Path path = Path.of("src", "main", "resources",
                 split[split.length-2],
                 split[split.length-1].toLowerCase() + ".txt");
+        System.out.println("Input file path - " + path );
+        return path;
     }
 
     public static int[] getAsIntArray(long n)
