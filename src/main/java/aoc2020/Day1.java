@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 
 public class Day1
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         List<String> input = Files.readAllLines(Util.getInputFilePath() );
 
         Map<Integer, Integer> inputCountMap = input.stream()
@@ -27,29 +26,23 @@ public class Day1
         findEntry2(target, inputCountMap);
     }
 
-    private static void findEntry2(int target, Map<Integer,Integer> inputCountMap)
-    {
-        for(Map.Entry<Integer, Integer> entry : inputCountMap.entrySet())
-        {
+    private static void findEntry2(int target, Map<Integer,Integer> inputCountMap) {
+        for(Map.Entry<Integer, Integer> entry : inputCountMap.entrySet()) {
             int subTarget = target - entry.getKey();
             int result = findEntry(subTarget, inputCountMap);
-            if(result != -1)
-            {
+            if(result != -1) {
                 System.out.println(entry.getKey() * result * (subTarget - result));
                 return;
             }
         }
     }
 
-    private static int findEntry(int target, Map<Integer, Integer> inputCountMap)
-    {
-        if(target%2 == 0)
-        {
+    private static int findEntry(int target, Map<Integer, Integer> inputCountMap) {
+        if(target%2 == 0) {
             if(inputCountMap.containsKey(target/2) && inputCountMap.get(target/2) > 1)
                 return target/2;
         }
-        for(Map.Entry<Integer, Integer> entry : inputCountMap.entrySet())
-        {
+        for(Map.Entry<Integer, Integer> entry : inputCountMap.entrySet()) {
             if(inputCountMap.containsKey(target - entry.getKey()))
                 return entry.getKey();
         }

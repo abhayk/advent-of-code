@@ -9,8 +9,7 @@ import java.util.List;
 
 public class Day2
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         assert isPasswordValid("1-3 a: abcde");
         assert !isPasswordValid("1-3 b: cdefg");
         assert isPasswordValid("2-9 c: ccccccccc");
@@ -26,29 +25,25 @@ public class Day2
         System.out.println(input.stream().filter(Day2::isPasswordValidUsingNewRule).count());
     }
 
-    private static boolean isPasswordValidUsingNewRule(String input)
-    {
+    private static boolean isPasswordValidUsingNewRule(String input) {
         Policy policy = new Policy(input);
         char[] arr = policy.text.toCharArray();
         return (arr[policy.lower - 1] == policy.ch)^(arr[policy.upper - 1] == policy.ch);
     }
 
-    private static boolean isPasswordValid(String input)
-    {
+    private static boolean isPasswordValid(String input) {
         Policy policy = new Policy(input);
         long charCount = policy.text.chars().filter( c -> c== policy.ch).count();;
         return charCount >= policy.lower && charCount <= policy.upper;
     }
 
-    static class Policy
-    {
+    static class Policy {
         String text;
         char ch;
         int lower;
         int upper;
 
-        public Policy(String input)
-        {
+        public Policy(String input) {
             String[] split = input.split(":");
             this.text = split[1].trim();
             String[] lhs = split[0].split(" ");

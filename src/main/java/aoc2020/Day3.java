@@ -9,8 +9,7 @@ import java.util.List;
 
 public class Day3
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         List<String> input = new ArrayList<>();
         input.add("..##.......");
         input.add("#...#...#..");
@@ -37,8 +36,7 @@ public class Day3
             getTreeCountInPath(grid, 1, 2) );
     }
 
-    private static char[][] toCharArray(List<String> input)
-    {
+    private static char[][] toCharArray(List<String> input) {
         char[][] arr = new char[input.size()][];
         int i=0;
         for(String line : input)
@@ -46,13 +44,11 @@ public class Day3
         return arr;
     }
 
-    private static int getTreeCountInPath(char[][] grid, int right, int down)
-    {
+    private static int getTreeCountInPath(char[][] grid, int right, int down) {
         int len = grid[0].length;
         int i = 0, j = 0;
         int treeCount = 0;
-        while(true)
-        {
+        while(true) {
             i += down;
             j += right;
 

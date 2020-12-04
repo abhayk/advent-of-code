@@ -16,22 +16,19 @@ import java.util.stream.Collectors;
 
 public class Day4
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         List<Map<String, String>> passports = parse2(Files.readString(Util.getInputFilePath()));
         System.out.println(passports.stream().filter(Day4::isValid).count());
         System.out.println(passports.stream().filter(Day4::isValid2).count());
     }
 
-    private static boolean isValid(Map<String, String> passport)
-    {
+    private static boolean isValid(Map<String, String> passport) {
         if(passport.size() == 8)
             return true;
         return passport.size() == 7 && !passport.containsKey("cid");
     }
 
-    private static boolean isValid2(Map<String, String> passport)
-    {
+    private static boolean isValid2(Map<String, String> passport) {
         if(!isValid(passport))
             return false;
 
@@ -39,8 +36,7 @@ public class Day4
         return passport.entrySet().stream().allMatch(entry -> rules.get(entry.getKey()).test(entry.getValue()));
     }
 
-    private static Map<String, Predicate<String>> getRules()
-    {
+    private static Map<String, Predicate<String>> getRules() {
         Map<String, Predicate<String>> rules = new HashMap<>();
 
         rules.put("byr", s -> {int v = parseInt(s); return v >= 1920 && v <= 2002; });
@@ -50,35 +46,27 @@ public class Day4
         rules.put("ecl", s -> Set.of("amb", "blu", "brn", "gry", "grn", "hzl", "oth").contains(s));
         rules.put("pid", s -> s.length() == 9 && s.matches("^[0-9]*$"));
         rules.put("cid", s -> true);
-        rules.put("hgt", s ->
-        {
+        rules.put("hgt", s -> {
             int v = parseInt(s.substring(0, s.length()-2));
             return s.endsWith("cm") ? (v >= 150 && v <= 193) : ( v >= 59 && v <= 76);
         });
         return rules;
     }
 
-    private static int parseInt(String s)
-    {
-        try
-        {
-            return Integer.parseInt(s);
-        }
+    private static int parseInt(String s) {
+        try { return Integer.parseInt(s); }
         catch (NumberFormatException e){ return -1; }
     }
 
-    private static List<Map<String, String>> parse2(String input)
-    {
+    private static List<Map<String, String>> parse2(String input) {
         List<String> inputList = Arrays.stream(input.split("\n\n"))
             .map(s -> s.replace("\n", " ")).collect(Collectors.toList());
 
         List<Map<String, String>> passports = new ArrayList<>();
 
-        for(String line : inputList)
-        {
+        for(String line : inputList) {
             Map<String, String> passport = new HashMap<>();
-            for(String detail : line.split(" "))
-            {
+            for(String detail : line.split(" ")) {
                 String[] split = detail.split(":");
                 passport.put(split[0], split[1]);
             }
