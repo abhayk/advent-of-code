@@ -5,19 +5,20 @@ import common.Util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Day4
 {
     public static void main(String[] args) throws IOException
     {
-        List<String> input = Files.readAllLines(Util.getInputFilePath());
-        List<Map<String, String>> passports = parse(input);
+        List<Map<String, String>> passports = parse2(Files.readString(Util.getInputFilePath()));
         System.out.println(passports.stream().filter(Day4::isValid).count());
         System.out.println(passports.stream().filter(Day4::isValid2).count());
     }
@@ -66,21 +67,20 @@ public class Day4
         catch (NumberFormatException e){ return -1; }
     }
 
-    private static List<Map<String, String>> parse(List<String> input)
+    private static List<Map<String, String>> parse2(String input)
     {
+        List<String> inputList = Arrays.stream(input.split("\n\n"))
+            .map(s -> s.replace("\n", " ")).collect(Collectors.toList());
+
         List<Map<String, String>> passports = new ArrayList<>();
-        Iterator<String> iterator = input.iterator();
-        while(iterator.hasNext())
+
+        for(String line : inputList)
         {
             Map<String, String> passport = new HashMap<>();
-            String line;
-            while(iterator.hasNext() && !(line = iterator.next()).isEmpty())
+            for(String detail : line.split(" "))
             {
-                for(String detail : line.split(" "))
-                {
-                    String[] split = detail.split(":");
-                    passport.put(split[0], split[1]);
-                }
+                String[] split = detail.split(":");
+                passport.put(split[0], split[1]);
             }
             passports.add(passport);
         }
