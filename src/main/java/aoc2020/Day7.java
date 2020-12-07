@@ -22,7 +22,9 @@ public class Day7 {
         Node target = nodes.get("shiny gold");
 
         // part 1
-        System.out.println(nodes.values().stream().filter(node -> isConnected(node, target)).count());
+        System.out.println(nodes.values().stream()
+            .filter(node -> isConnected(node, target))
+            .count());
 
         // part 2
         System.out.println(countBagsInside(target));
