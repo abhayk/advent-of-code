@@ -16,4 +16,9 @@ public class Pair<U, V> {
     public V getSecond() {
         return second;
     }
+
+    @Override
+    public String toString() {
+        return "{" + first + ", " + second + "}";
+    }
 }
