@@ -41,4 +41,19 @@ public class Point
     {
         return Objects.hash(x, y, z);
     }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+            "x=" + x +
+            ", y=" + y +
+            ", z=" + z +
+            '}';
+    }
+
+    public int manhattanDistance(Point other) {
+        return Math.abs(this.x - other.x) +
+            Math.abs(this.y - other.y) +
+            Math.abs(this.z - other.z);
+    }
 }
