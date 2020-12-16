@@ -54,7 +54,7 @@ public class Util
         return numbers.stream().mapToInt( a -> a ).toArray();
     }
 
-    public static long lcm( int[] input )
+    public static long lcm( long[] input )
     {
         long lcm = 1L;
         int divisor = 2;

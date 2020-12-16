@@ -162,7 +162,7 @@ public class Day12
         List<Integer> repeatFrequencies = new ArrayList<>();
         for( List<Integer> list : dimensions )
             repeatFrequencies.add( getIndexAtWhichCycleRepeats( list.stream().mapToInt( a -> a).toArray() ) );
-        return Util.lcm( repeatFrequencies.stream().mapToInt( a -> a ).toArray() );
+        return Util.lcm( repeatFrequencies.stream().mapToLong( a -> a ).toArray() );
 
     }
 
