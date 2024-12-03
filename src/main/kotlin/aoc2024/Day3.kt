@@ -13,16 +13,16 @@ class Day3: Solution {
     }
 
     override fun part2(input: String): Any {
-        val regex = """(?<do>do\(\))|(?<dont>don't\(\))|mul\((\d+),(\d+)\)""".toRegex()
+        val regex = """(do\(\))|(don't\(\))|mul\((\d+),(\d+)\)""".toRegex()
         var enabled = true
         var sum = 0L
         regex.findAll(input).forEach {
             when {
-                it.groups["do"] != null -> enabled = true
-                it.groups["dont"] != null -> enabled = false
+                it.groupValues[1].isNotEmpty() -> enabled = true
+                it.groupValues[2].isNotEmpty() -> enabled = false
                 else -> {
                     if (enabled) {
-                        val(_, _, left, right) = it.destructured
+                        val (left, right) = it.groupValues.drop(3)
                         sum += left.toLong() * right.toLong()
                     }
                 }
