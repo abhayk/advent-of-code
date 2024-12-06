@@ -8,33 +8,34 @@ class Day6: Solution {
     override fun part1(input: String): Any {
         val lines = input.lines()
         val start = getGuardPosition(lines)
-        return simulate(lines, start)
+        return simulate(lines, start)?.size ?: -1
     }
 
     override fun part2(input: String): Any {
         val lines = input.lines()
         var count = 0
         val start = getGuardPosition(lines)
-        for (i in lines.indices) {
-            for (j in 0 until lines[0].length) {
-                if (lines[i][j] == '#' || lines[i][j] == '^') {
-                    continue
-                }
-                val updatedLine = lines[i].toMutableList()
-                updatedLine[j] = 'O'
-                val linesCopy = input.lines().toMutableList()
-                linesCopy[i] = updatedLine.joinToString("")
-                val result = simulate(linesCopy, start)
-                if (result == -1) {
-                    count++
-                }
+        val steps = simulate(lines, start)!!
+        for (step in steps) {
+            val i = step.first
+            val j = step.second
+            if (lines[i][j] == '#' || lines[i][j] == '^') {
+                continue
+            }
+            val updatedLine = lines[i].toMutableList()
+            updatedLine[j] = 'O'
+            val linesCopy = input.lines().toMutableList()
+            linesCopy[i] = updatedLine.joinToString("")
+            val result = simulate(linesCopy, start)
+            if (result == null) {
+                count++
             }
         }
         return count
     }
 
 
-    private fun simulate(lines: List<String>, start: Pair<Int, Int>): Int {
+    private fun simulate(lines: List<String>, start: Pair<Int, Int>): Set<Pair<Int, Int>>? {
         var current = start.copy()
         val visited = mutableMapOf<Pair<Int, Int>, Int>()
         visited[current] = 1
@@ -47,13 +48,13 @@ class Day6: Solution {
         var currentDirection = (-1 to 0)
         while (true) {
             if (visited.getOrDefault(current, 0) > 4) {
-                return -1 // loop detected
+                return null // loop detected
             }
             val nextChar = getChar(lines,
                 current.first + currentDirection.first,
                 current.second + currentDirection.second, '$')
             if (nextChar == '$') {
-                return visited.size
+                return visited.keys
             }
             if (nextChar == '#' || nextChar == 'O') {
                 currentDirection = nextTurn[currentDirection]!!
