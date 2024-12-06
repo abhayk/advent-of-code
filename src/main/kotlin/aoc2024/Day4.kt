@@ -1,6 +1,7 @@
 package aoc2024
 
 import Solution
+import common.getChar
 
 class Day4: Solution {
 
@@ -25,15 +26,6 @@ class Day4: Solution {
             }
         }
         return count
-    }
-
-    private fun getChar(lines: List<String>, x: Int, y: Int): Char {
-        val rowCount = lines.size
-        val colCount = lines[0].length
-        if (x < 0 || x >= rowCount || y < 0 || y >= colCount) {
-            return '.'
-        }
-        return lines[x][y]
     }
 
     override fun part2(input: String): Any {
