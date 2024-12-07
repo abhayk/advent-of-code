@@ -27,6 +27,9 @@ class Day7: Solution {
         if (counter == numbers.size) {
             return currentTotal == target
         }
+        if (currentTotal > target) {
+            return false
+        }
         for (operator in operators) {
             val result = when(operator) {
                 '+' -> isCalibrated(numbers, target, operators, counter + 1, currentTotal + numbers[counter])
