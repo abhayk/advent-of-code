@@ -1,55 +1,43 @@
 package aoc2024
 
 import Solution
+import java.lang.IllegalArgumentException
 
 class Day7: Solution {
     override fun part1(input: String): Any {
-        return calculateTotalCalibration(input, listOf("+", "*"))
+        return calculateTotalCalibration(input, "+*")
     }
 
     override fun part2(input: String): Any {
-        return calculateTotalCalibration(input, listOf("+", "*", "|"))
+        return calculateTotalCalibration(input, "+*|")
     }
 
-    private fun calculateTotalCalibration(input: String, operators: List<String>): Long {
-        var totalCalibrationResult = 0L
-        for (line in input.lines()) {
-            val parts = line.split(": ")
+    private fun calculateTotalCalibration(input: String, operators: String): Long {
+        return input.lines().map {
+            val parts = it.split(": ")
             val target = parts[0].toLong()
-            val numbers = parts[1].split(" ").map { it.toLong() }
-            for (permutation in generatePermutations(operators, numbers.size - 1)) {
-                var total = numbers[0]
-                var counter = 1
-                for (operator in permutation) {
-                    when(operator) {
-                        '+' -> total += numbers[counter]
-                        '*' -> total *= numbers[counter]
-                        '|' -> total = "$total${numbers[counter]}".toLong()
-                    }
-                    counter++
-                }
-                if (total == target) {
-                    totalCalibrationResult += target
-                    break
-                }
-            }
-        }
-        return totalCalibrationResult
+            val numbers = parts[1].split(" ").map { str -> str.toLong() }
+            target to numbers
+        }.filter { (target, numbers) ->
+            isCalibrated(numbers, target, operators, 1, numbers[0])
+        }.sumOf { (target, _) -> target }
     }
 
-    private fun generatePermutations(elements: List<String>, length: Int): List<String> {
-        val final = elements.toMutableList()
-        for (i in 0 until length - 1) {
-            val tmp = final.toList()
-            for (item in tmp) {
-                if (item.length != i+1) {
-                    continue
-                }
-                for (element in elements) {
-                    final.add(element + item)
-                }
+    private fun isCalibrated(numbers: List<Long>, target: Long, operators: String, counter: Int, currentTotal: Long): Boolean {
+        if (counter == numbers.size) {
+            return currentTotal == target
+        }
+        for (operator in operators) {
+            val result = when(operator) {
+                '+' -> isCalibrated(numbers, target, operators, counter + 1, currentTotal + numbers[counter])
+                '*' -> isCalibrated(numbers, target, operators, counter + 1, currentTotal * numbers[counter])
+                '|' -> isCalibrated(numbers, target, operators, counter + 1, "$currentTotal${numbers[counter]}".toLong())
+                else -> throw IllegalArgumentException("unknown operator")
+            }
+            if (result) {
+                return true
             }
         }
-        return final.filter { it.length == length }
+        return false
     }
 }
