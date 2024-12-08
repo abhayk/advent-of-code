@@ -3,7 +3,6 @@ package aoc2024
 import Solution
 import common.GridUtils.isValidPointInGrid
 import common.GridUtils.toCharGrid
-import kotlin.math.abs
 
 class Day8: Solution {
     override fun part1(input: String): Any {
@@ -19,17 +18,16 @@ class Day8: Solution {
                 for ( j in i+1 until points.size) {
                     val p1 = points[i]
                     val p2 = points[j]
-                    val rowDistance = abs(p1.first - p2.first)
-                    val colDistance = abs(p1.second - p2.second)
-                    val nodes = mutableListOf<Pair<Int, Int>>()
-                    if (p1.second < p2.second) {
-                        nodes.add(p1.first - rowDistance to p1.second - colDistance)
-                        nodes.add(p2.first + rowDistance to p2.second + colDistance)
-                    } else {
-                        nodes.add(p1.first - rowDistance to p1.second + colDistance,)
-                        nodes.add(p2.first + rowDistance to p2.second - colDistance)
+                    val rowDistance = p1.first - p2.first
+                    val colDistance = p1.second - p2.second
+                    val antiNode1 = p1.first + rowDistance to p1.second + colDistance
+                    val antiNode2 = p2.first - rowDistance to p2.second - colDistance
+                    if (isValidPointInGrid(grid, antiNode1)) {
+                        antiNodes.add(antiNode1)
                     }
-                    antiNodes.addAll(nodes.filter { isValidPointInGrid(grid, it) })
+                    if (isValidPointInGrid(grid, antiNode2)) {
+                        antiNodes.add(antiNode2)
+                    }
                 }
             }
         }
@@ -49,19 +47,14 @@ class Day8: Solution {
                 for ( j in i+1 until points.size) {
                     val p1 = points[i]
                     val p2 = points[j]
-                    val rowDistance = abs(p1.first - p2.first)
-                    val colDistance = abs(p1.second - p2.second)
+                    val rowDistance = p1.first - p2.first
+                    val colDistance = p1.second - p2.second
                     var leftPending = true
                     var rightPending = true
                     var counter = 1
                     while(leftPending || rightPending) {
-                        val (antiNode1, antiNode2) = if (p1.second < p2.second) {
-                            (p1.first - (rowDistance * counter) to p1.second - (colDistance * counter)) to
-                                    (p2.first + (rowDistance * counter) to p2.second + (colDistance * counter))
-                        } else {
-                            (p1.first - (rowDistance * counter) to p1.second + (colDistance * counter)) to
-                                    (p2.first + (rowDistance * counter) to p2.second - (colDistance * counter))
-                        }
+                        val antiNode1 = p1.first + (rowDistance * counter) to p1.second + (colDistance * counter)
+                        val antiNode2 = p2.first - (rowDistance * counter) to p2.second - (colDistance * counter)
                         if (isValidPointInGrid(grid, antiNode1)) {
                             antiNodes.add(antiNode1)
                         } else { leftPending = false }
