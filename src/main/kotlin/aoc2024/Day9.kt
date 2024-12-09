@@ -39,26 +39,24 @@ class Day9: Solution {
             // look for a gap where the file would fit
             var left = 0
             var gapFound = false
+            var gapSize = 0
             while(left < right) {
-                var gap = 0
+                gapSize = 0
                 if (arr[left] != -1) { left ++ }
                 else {
-                    while (arr[left] == -1) {
-                        gap++
+                    while (left < arr.size && arr[left] == -1) {
+                        gapSize++
                         left++
-                        if (gap == fileSize) {
-                            gapFound = true
-                            break
-                        }
                     }
-                    if (gapFound) {
+                    if (gapSize >= fileSize) {
+                        gapFound = true
                         break
                     }
                 }
             }
             // if it fits move the file
             if (gapFound) {
-                var gapStart = left - fileSize
+                var gapStart = left - gapSize
                 for (i in 0 until fileSize) {
                     arr[gapStart] = arr[right]
                     arr[right] = -1
