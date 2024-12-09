@@ -4,25 +4,7 @@ import Solution
 
 class Day9: Solution {
     override fun part1(input: String): Any {
-        val list = mutableListOf<Int>()
-        var index = 0
-        var fileIndex = 0
-        for (c in input.toCharArray()) {
-            val id = c.code - 49
-            if ((index + 1) % 2 == 0) {
-                for (j in 0..id) {
-                    list.add(-1)
-                }
-            } else {
-                for (j in 0..id) {
-                    list.add(fileIndex)
-                }
-                fileIndex++
-            }
-            index++
-        }
-        //println(list)
-        val arr = list.toTypedArray()
+        val arr = parseInput(input)
         var left = 0
         var right = arr.size - 1
         while(left < right) {
@@ -37,51 +19,28 @@ class Day9: Solution {
                 right--
             }
         }
-        val final = arr.toList().subList(0, right + 1)
-        //println(final)
-        var sum = 0L
-        var tmp = 0L
-        for (item in final) {
-            sum += item*tmp
-            tmp++
-        }
-        return sum
+        return arr.toList()
+            .subList(0, right + 1)
+            .withIndex()
+            .sumOf { it.value.toLong() * it.index }
     }
 
     override fun part2(input: String): Any {
-        val list = mutableListOf<Int>()
-        var index = 0
-        var fileIndex = 0
-        for (c in input.toCharArray()) {
-            val id = c.code - 49
-            if ((index + 1) % 2 == 0) {
-                for (j in 0..id) {
-                    list.add(-1)
-                }
-            } else {
-                for (j in 0..id) {
-                    list.add(fileIndex)
-                }
-                fileIndex++
-            }
-            index++
-        }
-        //println(list)
-        val arr = list.toTypedArray()
-        var left = 0
+        val arr = parseInput(input)
         var right = arr.size - 1
         while (right > 0) {
+            // find size of current file
             var fileSize = 0
             var tmpRight = right
             while(tmpRight >= 0 && arr[tmpRight] == arr[right]) {
                 tmpRight--
                 fileSize++
             }
-            left = 0
+            // look for a gap where the file would fit
+            var left = 0
             var gapFound = false
-            var gap = 0
             while(left < right) {
-                gap = 0
+                var gap = 0
                 if (arr[left] != -1) { left ++ }
                 else {
                     while (arr[left] == -1) {
@@ -97,6 +56,7 @@ class Day9: Solution {
                     }
                 }
             }
+            // if it fits move the file
             if (gapFound) {
                 var gapStart = left - fileSize
                 for (i in 0 until fileSize) {
@@ -109,18 +69,29 @@ class Day9: Solution {
                 right -= fileSize
             }
         }
-        val final = arr.toList()
-        //println(final)
-        var sum = 0L
-        var tmp = 0L
-        for (item in final) {
-            if (item == -1) {
-                tmp++
-                continue
+        return arr.toList()
+            .withIndex()
+            .filter { it.value != -1 }
+            .sumOf { it.value.toLong() * it.index }
+    }
+
+    private fun parseInput(input: String): Array<Int> {
+        val list = mutableListOf<Int>()
+        var index = 0
+        var fileIndex = 0
+        for (id in input.chars().map { it - 49 }) {
+            if ((index + 1) % 2 == 0) {
+                for (j in 0..id) {
+                    list.add(-1)
+                }
+            } else {
+                for (j in 0..id) {
+                    list.add(fileIndex)
+                }
+                fileIndex++
             }
-            sum += item*tmp
-            tmp++
+            index++
         }
-        return sum
+        return list.toTypedArray()
     }
 }
