@@ -1,12 +1,11 @@
 package aoc2024
 
 import Solution
-import common.GridUtils.isValidPointInGrid
-import common.GridUtils.toCharGrid
+import common.Grid
 
 class Day8: Solution {
     override fun part1(input: String): Any {
-        val grid = toCharGrid(input)
+        val grid = Grid.parse<Char>(input)
         val antiNodes = mutableSetOf<Pair<Int, Int>>()
         locateAntennas(grid)
             .filter { it.value.size > 1 }
@@ -20,10 +19,10 @@ class Day8: Solution {
                         val colDistance = p1.second - p2.second
                         val antiNode1 = p1.first + rowDistance to p1.second + colDistance
                         val antiNode2 = p2.first - rowDistance to p2.second - colDistance
-                        if (isValidPointInGrid(grid, antiNode1)) {
+                        if (grid.isValid(antiNode1)) {
                             antiNodes.add(antiNode1)
                         }
-                        if (isValidPointInGrid(grid, antiNode2)) {
+                        if (grid.isValid(antiNode2)) {
                             antiNodes.add(antiNode2)
                         }
                     }
@@ -33,7 +32,7 @@ class Day8: Solution {
     }
 
     override fun part2(input: String): Any {
-        val grid = toCharGrid(input)
+        val grid = Grid.parse<Char>(input)
         val antiNodes = mutableSetOf<Pair<Int, Int>>()
         val antennas = locateAntennas(grid)
         antennas.filter { it.value.size > 1 }
@@ -51,10 +50,10 @@ class Day8: Solution {
                         while(leftPending || rightPending) {
                             val antiNode1 = p1.first + (rowDistance * counter) to p1.second + (colDistance * counter)
                             val antiNode2 = p2.first - (rowDistance * counter) to p2.second - (colDistance * counter)
-                            if (isValidPointInGrid(grid, antiNode1)) {
+                            if (grid.isValid(antiNode1)) {
                                 antiNodes.add(antiNode1)
                             } else { leftPending = false }
-                            if (isValidPointInGrid(grid, antiNode2)) {
+                            if (grid.isValid(antiNode2)) {
                                 antiNodes.add(antiNode2)
                             } else { rightPending = false }
                             counter++
@@ -66,14 +65,14 @@ class Day8: Solution {
         return antiNodes.size
     }
 
-    private fun locateAntennas(grid: Array<CharArray>): Map<Char, List<Pair<Int, Int>>> {
+    private fun locateAntennas(grid: Grid<Char>): Map<Char, List<Pair<Int, Int>>> {
         val antennas = mutableMapOf<Char, MutableList<Pair<Int, Int>>>()
-        for (i in grid.indices) {
-            for (j in grid[0].indices) {
-                if (grid[i][j] == '.') {
+        for (i in grid.rowIndices) {
+            for (j in grid.colIndices) {
+                if (grid.get(i, j) == '.') {
                     continue
                 }
-                antennas.computeIfAbsent(grid[i][j]) { mutableListOf() }.add(i to j)
+                antennas.computeIfAbsent(grid.get(i, j)) { mutableListOf() }.add(i to j)
             }
         }
         return antennas

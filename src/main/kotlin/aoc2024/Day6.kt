@@ -1,30 +1,29 @@
 package aoc2024
 
 import Solution
-import common.GridUtils.getChar
-import common.GridUtils.toCharGrid
-import java.lang.IllegalArgumentException
+import common.Grid
 
 class Day6: Solution {
     override fun part1(input: String): Any {
-        val grid = toCharGrid(input)
-        val start = getGuardPosition(grid)
-        return simulate(grid, start)?.size ?: -1
+        val grid = Grid.parse(input, '$')
+        val start = grid.find('^')
+        return simulate(grid, start!!)?.size ?: -1
     }
 
     override fun part2(input: String): Any {
-        val grid = toCharGrid(input)
-        val start = getGuardPosition(grid)
+        val grid = Grid.parse(input, '$')
+        val start = grid.find('^')
         var count = 0
-        val steps = simulate(grid, start)!!
+        val steps = simulate(grid, start!!)!!
         for (step in steps) {
             val i = step.first
             val j = step.second
-            if (grid[i][j] == '#' || grid[i][j] == '^') {
+            val value = grid.get(i, j)
+            if (value == '#' || value == '^') {
                 continue
             }
-            val tmp = grid.map { it.copyOf() }.toTypedArray()
-            tmp[i][j] = 'O'
+            val tmp = Grid.clone(grid)
+            tmp.set(i, j, 'O')
             val result = simulate(tmp, start)
             if (result == null) {
                 count++
@@ -34,7 +33,7 @@ class Day6: Solution {
     }
 
 
-    private fun simulate(grid: Array<CharArray>, start: Pair<Int, Int>): Set<Pair<Int, Int>>? {
+    private fun simulate(grid: Grid<Char>, start: Pair<Int, Int>): Set<Pair<Int, Int>>? {
         var current = start.copy()
         val visited = mutableMapOf<Pair<Int, Int>, Int>()
         visited[current] = 1
@@ -49,9 +48,8 @@ class Day6: Solution {
             if (visited.getOrDefault(current, 0) > 4) {
                 return null // loop detected
             }
-            val nextChar = getChar(grid,
-                current.first + currentDirection.first,
-                current.second + currentDirection.second, '$')
+            val nextChar = grid.get(current.first + currentDirection.first,
+                current.second + currentDirection.second)
             if (nextChar == '$') {
                 return visited.keys
             }
@@ -62,16 +60,5 @@ class Day6: Solution {
                 visited[current] = visited.getOrDefault(current, 0) + 1
             }
         }
-    }
-
-    private fun getGuardPosition(grid: Array<CharArray>): Pair<Int, Int> {
-        for (i in grid.indices) {
-            for (j in 0 until grid[0].size) {
-                if (grid[i][j] == '^') {
-                    return i to j
-                }
-            }
-        }
-        throw IllegalArgumentException("guard not found")
     }
 }
