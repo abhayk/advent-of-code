@@ -58,6 +58,11 @@ class Grid<T>(
 
         val unsupportedTypeError = NotImplementedError("Grid type not supported yet")
 
+        inline fun <reified T> init(rowCount: Int, colCount: Int, defaultValue: T = getDefaultValue()): Grid<T> {
+            val gridData = Array(rowCount) { Array(colCount) {defaultValue} }
+            return Grid(gridData, defaultValue)
+        }
+
         inline fun <reified T> parse(input: String, defaultValue: T = getDefaultValue()): Grid<T> {
             val gridData = input.lines().map { row ->
                 row.map { char ->
