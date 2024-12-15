@@ -43,7 +43,19 @@ class Grid<T>(
         return null
     }
 
+    fun getNSEWAdjacent(x: Int, y: Int): List<Pair<Int, Int>> {
+        return ADJACENT_4.map { it.first + x to it.second + y }
+            .filter { isValid(it) }
+    }
+
+    fun getNSEWAdjacent(point: Pair<Int, Int>): List<Pair<Int, Int>> {
+        return getNSEWAdjacent(point.first, point.second)
+    }
+
     companion object {
+
+        val ADJACENT_4 = listOf(0 to 1, -1 to 0, 0 to -1, 1 to 0)
+
         val unsupportedTypeError = NotImplementedError("Grid type not supported yet")
 
         inline fun <reified T> parse(input: String, defaultValue: T = getDefaultValue()): Grid<T> {
